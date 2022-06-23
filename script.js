@@ -96,8 +96,10 @@ function sendMsg() {
 //
 
 function sendPubMsg() {
-    msgBox.innerHTML += 
-    `<div class="publicMsg"><span><em>current:time</em> <strong>${username}</strong> para <strong>${selectedCon}</strong>: ${msgTxt.value}</span></div>`
+    msgBox.innerHTML += `<div class="publicMsg"><span><em>current:time</em> <strong>${username}</strong> para <strong>${selectedCon}</strong>: ${msgTxt.value}</span></div>`
+    let pubMsg = document.querySelectorAll(".publicMsg")
+    let lastPubMsg = pubMsg.length - 1
+    pubMsg[lastPubMsg].scrollIntoView()
     msgTxt.value = ""
 }
 
@@ -106,5 +108,8 @@ function sendPubMsg() {
 function sendPrivMsg() {
     msgBox.innerHTML += 
     `<div class="privateMsg"><span><em>current:time</em> <strong>${username}</strong> reservadamente para <strong>${selectedCon}</strong>: ${msgTxt.value}</span></div>`
+    let privMsg = document.querySelectorAll(".privateMsg")
+    let lastPrivMsg = privMsg.length - 1
+    privMsg[lastPrivMsg].scrollIntoView()
     msgTxt.value = ""
 }
