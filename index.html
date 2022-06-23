@@ -18,33 +18,29 @@
         </div>
     </div>
 
-    <div class="topBar"><img src="./imagens/logo.png" alt=""> <ion-icon name="people"  onclick="sideBarIn()"></ion-icon></div>
+    <div class="topBar"><img src="./imagens/logo.png" alt="" onclick="refresh()"> <ion-icon name="people"  onclick="sideBarIn()"></ion-icon></div>
 
     <div class="msgBox">
-        <div class="statusMsg"><span><em>${time:time:time}</em> <strong>${username}</strong> ${status} sala...</span></div>
-
-        <div class="publicMsg"><span><em>${time:time:time}</em> <strong>${username}</strong> para <strong>${receiver}</strong>: Blablabla blablabla</span></div>
-
-        <div class="privateMsg"><span><em>${time:time:time}</em> <strong>${username}</strong> reservadamente para <strong>${receiver}</strong>: Blublublu blublublu</span></div>
+       
     </div>
 
     <div class="sideBar">
         <span>Selecione com quem deseja conversar</span>
             <ul class="contacts">
-                <li class="option_contact"><ion-icon name="people" class="icon_sidebar"></ion-icon>Todos<ion-icon name="checkmark" class="check"></ion-icon></li>
-                <li class="option_contact"><ion-icon name="person-circle" class="icon_sidebar"></ion-icon>munhenhomuchachi<ion-icon name="checkmark" class="check"></ion-icon></li>
-                <li class="option_contact"><ion-icon name="person-circle" class="icon_sidebar"></ion-icon>jonata<ion-icon name="checkmark" class="check"></ion-icon></li>
+                <li class="option_contact" onclick="toggleCon(this)"><ion-icon name="people" class="icon_sidebar"></ion-icon><div>Todos</div><ion-icon name="checkmark" class="check"></ion-icon></li>
+                <li class="option_contact" onclick="toggleCon(this)"><ion-icon name="person-circle" class="icon_sidebar"></ion-icon><div>munhenhomuchachi</div><ion-icon name="checkmark" class="check hidden"></ion-icon></li>
+                <li class="option_contact" onclick="toggleCon(this)"><ion-icon name="person-circle" class="icon_sidebar"></ion-icon><div>jonata</div><ion-icon name="checkmark" class="check hidden"></ion-icon></li>
             </ul>
         <span>Selecione a visibilidade da conversa</span>
         <div class="visibility">
-            <div class="option_visibility"><ion-icon name="lock-open"  class="icon_sidebar"></ion-icon>Pública<ion-icon name="checkmark" class="check"></ion-icon></div>
-            <div class="option_visibility"><ion-icon name="lock-closed"  class="icon_sidebar"></ion-icon>Reservada<ion-icon name="checkmark" class="check"></ion-icon></div>
+            <div class="option_visibility" onclick="toggleVis(this)"><ion-icon name="lock-open"  class="icon_sidebar"></ion-icon>Pública<ion-icon name="checkmark" class="check"></ion-icon></div>
+            <div class="option_visibility" onclick="toggleVis(this)"><ion-icon name="lock-closed"  class="icon_sidebar"></ion-icon>Reservada<ion-icon name="checkmark" class="check hidden"></ion-icon></div>
         </div>
     </div>
 
     <div class="sideBar_background hidden" onclick="sideBarOut()"></div>
 
-    <div class="bottomBar"><input type="text" placeholder="Escreva aqui..."> <ion-icon name="paper-plane-outline"></ion-icon></div>
+    <div class="bottomBar"><textarea placeholder="Escreva aqui..."></textarea><ion-icon name="paper-plane-outline" onclick="sendMsg()"></ion-icon></div>
 
     <script src="script.js"></script>
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
