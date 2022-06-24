@@ -1,12 +1,16 @@
-const usersList = [];
-let username;
+let usersList = []
+let username = "default"
+let usernameObj
+
+const loginScreen = document.querySelector(".logIn_screen")
 
 const sideBar = document.querySelector(".sideBar")     
 const sideBar_backg = document.querySelector(".sideBar_background")
+let sideBar_contacts = sideBar.querySelector("ul")
 
 const optionsVis = document.querySelectorAll(".option_visibility")
-const optionsCon = document.querySelectorAll(".option_contact")
-let selectedCon = "Todos";
+let optionsCon = document.querySelectorAll(".option_contact")
+let selectedCon = "Todos"
 
 const msgBox = document.querySelector(".msgBox")
 let msgTxt = document.querySelector("textarea")
@@ -20,17 +24,96 @@ function refresh(){
 //
 
 function logIn() {
-    const loginScreen = document.querySelector(".logIn_screen")
     const loginMenu = loginScreen.querySelector(".logIn_menu")
     const loginInput = loginMenu.querySelector("input")
+    
 
-    if (loginInput.value === "" || loginInput.value === undefined || loginInput.value === null ) {
+    if (loginInput.value === "") {
         alert("Insira um nome de usuário.")
     } else {
         username = loginInput.value
-        msgBox.innerHTML += ` <div class="statusMsg"><span><em>current:time</em> <strong>${username}</strong> entrou na sala...</span></div>`
-        loginScreen.classList.add("hidden")
+        usernameObj = {
+            name: username
+          }
+        const promise = axios.post('https://mock-api.driven.com.br/api/v6/uol/participants', usernameObj)
+        promise.then(logInSuccess)
+        promise.catch(logInFailure)
     }
+}
+
+//
+
+function logInSuccess() {
+    loginScreen.classList.add("hidden") 
+    setInterval(keepConnection, 5000)
+}
+
+//
+
+function logInFailure(error) {
+    if (error.response.status === 400) {
+        alert("Esse nome já está sendo utilizado. Digite um novo nome.")
+    }
+}
+
+//
+
+function keepConnection() {
+    axios.post("https://mock-api.driven.com.br/api/v6/uol/status", usernameObj)
+}
+
+//
+
+function getContacts() {
+    let promise = axios.get('https://mock-api.driven.com.br/api/v6/uol/participants')
+    promise.then(fillContacts)
+}
+
+getContacts()
+setInterval(getContacts, 10000)
+
+//
+
+function fillContacts(contacts){
+    sideBar_contacts.innerHTML = ` <li class="option_contact" onclick="toggleCon(this)" data-identifier="participant"><ion-icon name="people" class="icon_sidebar"></ion-icon><div>Todos</div><ion-icon name="checkmark" class="check hidden"></ion-icon></li>`
+    usersList = contacts.data;
+    for(let i = 0; i < usersList.length; i++){
+        sideBar_contacts.innerHTML += `<li class="option_contact" onclick="toggleCon(this)" data-identifier="participant"><ion-icon name="person-circle" class="icon_sidebar"></ion-icon><div>${usersList[i].name}</div><ion-icon name="checkmark" class="check hidden"></ion-icon></li>`
+    }
+    optionsCon = document.querySelectorAll(".option_contact")
+}
+
+//
+
+function getMsgs() {
+    let promise = axios.get('https://mock-api.driven.com.br/api/v6/uol/messages')
+    promise.then(fillMsgs)
+}
+
+setInterval(getMsgs, 3000);
+
+//
+
+function fillMsgs(Msgs) {
+    msgBox.innerHTML = ""
+    let MsgData = Msgs.data
+    let hidden = ""
+    for(let i = 0; i < MsgData.length; i++){
+        if(MsgData[i].type === "message"){
+        msgBox.innerHTML += `<div class="message"><span><em>${MsgData[i].time}</em> <strong>${MsgData[i].from}</strong> para <strong>${MsgData[i].to}</strong>: ${MsgData[i].text}</span></div>`
+        }
+        if(MsgData[i].type === "private_message"){
+            if (MsgData[i].from !== username && MsgData[i].to !== username){
+                hidden = "hidden"
+            }
+            msgBox.innerHTML += `<div class="private_message ${hidden}"><span><em>${MsgData[i].time}</em> <strong>${MsgData[i].from}</strong> reservadamente para <strong>${MsgData[i].to}</strong>: ${MsgData[i].text}</span></div>`
+            hidden = ""
+        }
+        if(MsgData[i].type === "status") {
+            msgBox.innerHTML += `<div class="status"><span><em>${MsgData[i].time}</em> <strong>${MsgData[i].from}</strong> ${MsgData[i].text}`
+        }
+    }
+    autoscroll()
 }
 
 //
@@ -84,32 +167,82 @@ function sendMsg() {
     if (msgTxt.value !== ""){
         let pubCheck = optionsVis[0].querySelector(".check").classList.contains("hidden")
         if (pubCheck !== true){
-            sendPubMsg();
+            postPubMsg();
         }
         let privCheck = optionsVis[1].querySelector(".check").classList.contains("hidden")
         if (privCheck !== true){
-            sendPrivMsg();
+            postPrivMsg();
         }
     }
 }
 
 //
 
-function sendPubMsg() {
-    msgBox.innerHTML += `<div class="publicMsg"><span><em>current:time</em> <strong>${username}</strong> para <strong>${selectedCon}</strong>: ${msgTxt.value}</span></div>`
-    let pubMsg = document.querySelectorAll(".publicMsg")
-    let lastPubMsg = pubMsg.length - 1
-    pubMsg[lastPubMsg].scrollIntoView()
+function postPubMsg() {
+    let pubMsgObj = {
+        from: username,
+        to: selectedCon,
+        text: msgTxt.value,
+        type: "message"
+    }
+    let promise = axios.post('https://mock-api.driven.com.br/api/v6/uol/messages', pubMsgObj)
+    promise.then(getPubMsg)
+    promise.catch(refresh)
+}
+
+//
+
+function getPubMsg() {
+    let promise = axios.get('https://mock-api.driven.com.br/api/v6/uol/messages')
+    promise.then(sendPubMsg)
+}
+
+//
+
+function sendPubMsg(msg) {
+    console.log(msg)
+    msgBox.innerHTML += `<div class="message"><span><em>${msg.data[99].time}</em> <strong>${msg.data[99].from}</strong> para <strong>${msg.data[99].to}</strong>: ${msg.data[99].text}</span></div>`
+
+    autoscroll()
     msgTxt.value = ""
 }
 
 //
 
-function sendPrivMsg() {
+function postPrivMsg() {
+    let privMsgObj = {
+        from: username,
+        to: selectedCon,
+        text: msgTxt.value,
+        type: "private_message"
+    }
+    let promise = axios.post('https://mock-api.driven.com.br/api/v6/uol/messages', privMsgObj)
+    promise.then(getPrivMsg)
+    promise.catch(refresh)
+}
+
+//
+
+function getPrivMsg() {
+    let promise = axios.get('https://mock-api.driven.com.br/api/v6/uol/messages')
+    promise.then(sendPrivMsg)
+}
+
+//
+
+function sendPrivMsg(msg) {
     msgBox.innerHTML += 
-    `<div class="privateMsg"><span><em>current:time</em> <strong>${username}</strong> reservadamente para <strong>${selectedCon}</strong>: ${msgTxt.value}</span></div>`
-    let privMsg = document.querySelectorAll(".privateMsg")
-    let lastPrivMsg = privMsg.length - 1
-    privMsg[lastPrivMsg].scrollIntoView()
+    `<div class="private_message"><span><em>${msg.data[99].time}</em> <strong>${msg.data[99].from}</strong> reservadamente para <strong>${msg.data[99].to}</strong>: ${msg.data[99].text}</span></div>`
+
+    autoscroll()
     msgTxt.value = ""
 }
+
+//
+
+function autoscroll() {
+    let msgs = msgBox.querySelectorAll("div")
+    let lastMsg = msgs.length - 1
+    msgs[lastMsg].scrollIntoView()
+}
+

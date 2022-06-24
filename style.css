@@ -97,7 +97,7 @@ span {
     padding: 12px 0;
 }
 
-.statusMsg {
+.status {
     width: 100vw;
     display: flex;
     align-items: center;
@@ -106,7 +106,7 @@ span {
     line-height: 20px;
 }
 
-.publicMsg {
+.message {
     width: 100vw;
     display: flex;
     align-items: center;
@@ -115,7 +115,7 @@ span {
     line-height: 20px;
 }
 
-.privateMsg {
+.private_message {
     width: 100vw;
     display: flex;
     align-items: center;
@@ -135,6 +135,11 @@ span {
     transition: all 0.2s;
     display: flex;
     flex-direction: column;
+}
+
+.sideBar ul {
+    overflow: scroll;
+    background-color: #e4e4e4;
 }
 
 .sideBar span {

@@ -27,14 +27,12 @@
     <div class="sideBar">
         <span>Selecione com quem deseja conversar</span>
             <ul class="contacts">
-                <li class="option_contact" onclick="toggleCon(this)"><ion-icon name="people" class="icon_sidebar"></ion-icon><div>Todos</div><ion-icon name="checkmark" class="check"></ion-icon></li>
-                <li class="option_contact" onclick="toggleCon(this)"><ion-icon name="person-circle" class="icon_sidebar"></ion-icon><div>munhenhomuchachi</div><ion-icon name="checkmark" class="check hidden"></ion-icon></li>
-                <li class="option_contact" onclick="toggleCon(this)"><ion-icon name="person-circle" class="icon_sidebar"></ion-icon><div>jonata</div><ion-icon name="checkmark" class="check hidden"></ion-icon></li>
+                <li class="option_contact" onclick="toggleCon(this)" data-identifier="participant"><ion-icon name="people" class="icon_sidebar"></ion-icon><div>Todos</div><ion-icon name="checkmark" class="check"></ion-icon></li>
             </ul>
         <span>Selecione a visibilidade da conversa</span>
         <div class="visibility">
-            <div class="option_visibility" onclick="toggleVis(this)"><ion-icon name="lock-open"  class="icon_sidebar"></ion-icon>Pública<ion-icon name="checkmark" class="check"></ion-icon></div>
-            <div class="option_visibility" onclick="toggleVis(this)"><ion-icon name="lock-closed"  class="icon_sidebar"></ion-icon>Reservada<ion-icon name="checkmark" class="check hidden"></ion-icon></div>
+            <div class="option_visibility" onclick="toggleVis(this)" data-identifier="visibility"><ion-icon name="lock-open"  class="icon_sidebar"></ion-icon>Pública<ion-icon name="checkmark" class="check"></ion-icon></div>
+            <div class="option_visibility" onclick="toggleVis(this)" data-identifier="visibility"><ion-icon name="lock-closed"  class="icon_sidebar"></ion-icon>Reservada<ion-icon name="checkmark" class="check hidden"></ion-icon></div>
         </div>
     </div>
 
@@ -42,8 +40,9 @@
 
     <div class="bottomBar"><textarea placeholder="Escreva aqui..."></textarea><ion-icon name="paper-plane-outline" onclick="sendMsg()"></ion-icon></div>
 
-    <script src="script.js"></script>
-    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
