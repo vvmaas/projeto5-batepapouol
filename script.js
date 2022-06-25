@@ -10,10 +10,12 @@ let sideBar_contacts = sideBar.querySelector("ul")
 
 const optionsVis = document.querySelectorAll(".option_visibility")
 let optionsCon = document.querySelectorAll(".option_contact")
+let todos
 let selectedCon = "Todos"
 
 const msgBox = document.querySelector(".msgBox")
 let msgTxt = document.querySelector("textarea")
+let destination = document.querySelector(".msg span")
 
 //
 
@@ -43,9 +45,23 @@ function logIn() {
 
 //
 
-function logInSuccess() {
-    loginScreen.classList.add("hidden") 
+function logInSuccess() { 
+    logInAnimation()
     setInterval(keepConnection, 5000)
+}
+
+//
+
+function logInAnimation() {
+    loginScreen.querySelector(".logIn_menu").classList.add("hidden")
+    loginScreen.querySelector(".starting").classList.remove("hidden")
+    setTimeout(hideLogIn, 4000)
+}
+
+//
+
+function hideLogIn() {
+    loginScreen.classList.add("hidden")
 }
 
 //
@@ -70,7 +86,7 @@ function getContacts() {
 }
 
 getContacts()
-setInterval(getContacts, 10000)
+setInterval(getContacts, 3000)
 
 //
 
@@ -80,7 +96,33 @@ function fillContacts(contacts){
     for(let i = 0; i < usersList.length; i++){
         sideBar_contacts.innerHTML += `<li class="option_contact" onclick="toggleCon(this)" data-identifier="participant"><ion-icon name="person-circle" class="icon_sidebar"></ion-icon><div>${usersList[i].name}</div><ion-icon name="checkmark" class="check hidden"></ion-icon></li>`
     }
+    optionsCon = ""
     optionsCon = document.querySelectorAll(".option_contact")
+
+
+    if (selectedCon === "Todos"){
+        todos = document.querySelector("ul li")
+        toggleCon(todos)
+    } else {
+    let vibe = 0
+    for (let i = 0; i < usersList.length; i++){
+        let nameCon = usersList[i].name
+        if (nameCon === selectedCon){
+            toggleCon(optionsCon[i+1])
+            visDestination()
+            vibe = 1
+        }
+    }
+    if (vibe !== 0){
+        return true
+    } else {
+        todos = document.querySelector("ul li")
+        toggleCon(todos)
+        visDestination()
+        setTimeout(alert("O contato selecionado saiu da sala."), 500)
+    }
+}
+
 }
 
 //
@@ -143,6 +185,7 @@ function toggleVis(element) {
     if (check.classList.contains("hidden") === true){
         check.classList.remove("hidden")
     }
+    visDestination()
 }
 
 //
@@ -159,12 +202,28 @@ function toggleCon(element) {
         check.classList.remove("hidden")
         selectedCon = element.querySelector("div").innerHTML
     }
+    visDestination()
+}
+
+toggleCon(optionsCon[0])
+
+//
+
+function visDestination() {
+    let privCheck = optionsVis[1].querySelector(".check").classList.contains("hidden")
+    if (privCheck !== true){
+        destination.innerHTML = `Escrevendo para ${selectedCon} (reservadamente)` 
+    } 
+    let pubCheck = optionsVis[0].querySelector(".check").classList.contains("hidden")
+    if (pubCheck !== true){
+        destination.innerHTML = `Escrevendo para ${selectedCon}`
+    }
 }
 
 //
 
 function sendMsg() {
-    if (msgTxt.value !== ""){
+    if (msgTxt.value !== "" && selectedCon !== username){
         let pubCheck = optionsVis[0].querySelector(".check").classList.contains("hidden")
         if (pubCheck !== true){
             postPubMsg();
@@ -174,6 +233,10 @@ function sendMsg() {
             postPrivMsg();
         }
     }
+    if (selectedCon === username){
+        alert("Não se pode enviar mensagens para si mesmo!")
+    }
+
 }
 
 //
@@ -200,7 +263,6 @@ function getPubMsg() {
 //
 
 function sendPubMsg(msg) {
-    console.log(msg)
     msgBox.innerHTML += `<div class="message"><span><em>${msg.data[99].time}</em> <strong>${msg.data[99].from}</strong> para <strong>${msg.data[99].to}</strong>: ${msg.data[99].text}</span></div>`
 
     autoscroll()
@@ -210,6 +272,9 @@ function sendPubMsg(msg) {
 //
 
 function postPrivMsg() {
+    if(selectedCon === "Todos"){
+        alert("Não se pode enviar mensagens reservadas para todos!\nSelecione um contato ou selecione o modo de mensagens públicas.")
+    } else {
     let privMsgObj = {
         from: username,
         to: selectedCon,
@@ -219,6 +284,7 @@ function postPrivMsg() {
     let promise = axios.post('https://mock-api.driven.com.br/api/v6/uol/messages', privMsgObj)
     promise.then(getPrivMsg)
     promise.catch(refresh)
+}
 }
 
 //
